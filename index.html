@@ -247,18 +247,18 @@
                         <div class="space-y-5">
                             <div>
                                 <label for="loginEmail" class="block text-sm font-medium text-gray-700 mb-1">Email Administrateur</label>
-                                <input type="email" id="loginEmail" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500" placeholder="admin@ecole.com">
+                                <input type="email" id="loginEmail" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" placeholder="admin@ecole.com">
                             </div>
                             <div>
                                 <label for="loginPassword" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
                                 <div class="relative">
-                                    <input type="password" id="loginPassword" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 pr-10" placeholder="••••••••">
-                                    <button type="button" onclick="togglePasswordVisibility('loginPassword', this)" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-violet-600"><i class="fas fa-eye"></i></button>
+                                    <input type="password" id="loginPassword" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 pr-10" placeholder="••••••••">
+                                    <button type="button" onclick="togglePasswordVisibility('loginPassword', this)" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-orange-600"><i class="fas fa-eye"></i></button>
                                 </div>
                             </div>
                         </div>
                         <div class="mt-8">
-                            <button type="submit" class="submitBtn w-full bg-violet-600 hover:bg-violet-700 text-white font-bold py-4 rounded-lg">
+                            <button type="submit" class="submitBtn w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-lg">
                                 <span class="btnText">Se Connecter</span>
                                 <span class="btnSpinner hidden">Vérification...</span>
                             </button>
@@ -283,22 +283,22 @@
                         <div class="space-y-5">
                             <div>
                                 <label for="universityName" class="block text-sm font-medium text-gray-700 mb-1">Nom de votre Université/École</label>
-                                <input type="text" id="universityName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500">
+                                <input type="text" id="universityName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                             </div>
                             <div>
                                 <label for="adminEmail" class="block text-sm font-medium text-gray-700 mb-1">Votre Email (Administrateur)</label>
-                                <input type="email" id="adminEmail" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500">
+                                <input type="email" id="adminEmail" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                             </div>
                             <div>
                                 <label for="adminPassword" class="block text-sm font-medium text-gray-700 mb-1">Votre Mot de Passe</label>
                                 <div class="relative">
-                                    <input type="password" id="adminPassword" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 pr-10">
-                                    <button type="button" onclick="togglePasswordVisibility('adminPassword', this)" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-violet-600"><i class="fas fa-eye"></i></button>
+                                    <input type="password" id="adminPassword" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 pr-10">
+                                    <button type="button" onclick="togglePasswordVisibility('adminPassword', this)" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-orange-600"><i class="fas fa-eye"></i></button>
                                 </div>
                             </div>
                         </div>
                         <div class="mt-8">
-                            <button type="submit" class="submitBtn w-full bg-violet-600 hover:bg-violet-700 text-white font-bold py-4 rounded-lg">
+                            <button type="submit" class="submitBtn w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-lg">
                                 <span class="btnText">Créer le compte</span>
                                 <span class="btnSpinner hidden">Création...</span>
                             </button>
@@ -334,7 +334,7 @@
                         </div>
 
                         <div>
-                            <button type="submit" class="submitBtn w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-3">
+                            <button type="submit" class="submitBtn w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-3">
                                 <span class="btnText">Se Connecter</span>
                                 <span class="btnSpinner hidden">Vérification...</span>
                             </button>
@@ -364,7 +364,7 @@
                         </div>
 
                         <div>
-                            <button type="submit" class="submitBtn w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-3">
+                            <button type="submit" class="submitBtn w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-3">
                                 <span class="btnText">Entrer</span>
                                 <span class="btnSpinner hidden">Vérification...</span>
                             </button>
@@ -386,7 +386,7 @@
                 </div>
                 <h1 id="confirmation-title" class="text-2xl font-bold text-gray-800">Opération Réussie</h1>
                 <p id="confirmation-message" class="text-gray-600 mt-3 text-lg">Votre action a été complétée.</p>
-                <button onclick="hideAuthOverlay()" class="mt-6 inline-block w-full bg-violet-600 hover:bg-violet-700 text-white font-bold py-2 px-4 rounded-lg transition">Retour à l'accueil</button>
+                <button onclick="hideAuthOverlay()" class="mt-6 inline-block w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg transition">Retour à l'accueil</button>
             </div>
             </section>
         </div>
@@ -498,8 +498,8 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
             <div class="p-8 text-center">
                 <img src="https://i.postimg.cc/XXvkWXJW/logo-abm-company.png" alt="Logo ABM Company" class="w-20 h-20 mx-auto mb-4">
-                <h3 class="text-2xl font-bold text-gray-800">Africa Business Manager+</h3>
-                <p class="text-violet-600 text-sm font-medium mb-4">COMPANY</p>
+                <h3 class="text-2xl font-bold text-gray-800">Africa Business Manager</h3>
+                <p class="text-orange-600 text-sm font-medium mb-4">COMPANY</p>
                 <p class="text-gray-600 text-base leading-relaxed">
                     Solutions technologiques innovantes pour l'Afrique moderne.
                     Développement d'applications mobiles et systèmes de gestion intelligents.
@@ -910,7 +910,7 @@
             try {
                 const result = await callApi('registerSchool', data);
                 // AMÉLIORATION : On redirige systématiquement après une inscription réussie.
-                // Le backend renvoie toujours un token.
+                // Le backend renvoie toujours un token. CORRECTION: Utiliser la constante PAGE_URLS
                 displayMessageInForm(form, result.message, 'success');
                 setTimeout(() => { window.location.href = `${PAGE_URLS.ADMIN}?token=${encodeURIComponent(result.token)}`; }, 1500);
             } catch (error) {
@@ -930,7 +930,7 @@
             setLoading(true, form);
             try {
                 const result = await callApi('loginSchool', data);
-                window.location.href = `${PAGE_URLS.ADMIN}?token=${encodeURIComponent(result.token)}`;
+                window.location.href = `${PAGE_URLS.ADMIN}?token=${encodeURIComponent(result.token)}`; // CORRECTION: Utiliser la constante PAGE_URLS
             } catch (error) {
                 displayMessageInForm(form, error.message, 'error');
             } finally {
@@ -946,7 +946,7 @@
            try {
                 const result = await callApi('studentLogin', { studentId });
                 sessionStorage.setItem(STUDENT_SESSION_KEY, result.data.studentId);
-                window.location.href = PAGE_URLS.STUDENT;
+                window.location.href = PAGE_URLS.STUDENT; // CORRECTION: Utiliser la constante PAGE_URLS
             } catch (error) {
                 displayMessageInForm(form, error.message, 'error');
             } finally {
@@ -964,7 +964,7 @@
             setLoading(true, form);
             try {
                 const result = await callApi('responsableLogin', data);
-                window.location.href = `${PAGE_URLS.RESPONSABLE}?token=${encodeURIComponent(result.token)}`;
+                window.location.href = `${PAGE_URLS.RESPONSABLE}?token=${encodeURIComponent(result.token)}`; // CORRECTION: Utiliser la constante PAGE_URLS
             } catch (error) {
                 displayMessageInForm(form, error.message, 'error');
             } finally {
@@ -986,7 +986,7 @@
             try {
                 const result = await callApi('registerStudentInClass', data);
                 const modalContent = document.getElementById('modal-content');
-                modalContent.innerHTML = `<div class="p-6 text-center"><div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center bg-green-100"><span class="text-4xl text-green-600"><i class="fas fa-check"></i></span></div><h1 class="text-xl font-bold text-gray-800">Inscription Réussie !</h1><p class="text-gray-600 mt-3">${result.message}</p><button onclick="closeModal()" class="mt-6 w-full bg-violet-600 text-white py-2 rounded-md">Fermer</button></div>`;
+                modalContent.innerHTML = `<div class="p-6 text-center"><div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center bg-green-100"><span class="text-4xl text-green-600"><i class="fas fa-check"></i></span></div><h1 class="text-xl font-bold text-gray-800">Inscription Réussie !</h1><p class="text-gray-600 mt-3">${result.message}</p><button onclick="closeModal()" class="mt-6 w-full bg-orange-600 text-white py-2 rounded-md">Fermer</button></div>`;
             } catch (error) {
                 displayMessageInForm(form, error.message, 'error');
             } finally {
@@ -1006,7 +1006,7 @@
             try {
                 const result = await callApi('recordAttendance', data);
                 const modalContent = document.getElementById('modal-content');
-                modalContent.innerHTML = `<div class="p-6 text-center"><div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center bg-green-100"><span class="text-4xl text-green-600"><i class="fas fa-check"></i></span></div><h1 class="text-xl font-bold text-gray-800">Présence Enregistrée</h1><p class="text-gray-600 mt-3">${result.message}</p><button onclick="closeModal()" class="mt-6 w-full bg-violet-600 text-white py-2 rounded-md">Fermer</button></div>`;
+                modalContent.innerHTML = `<div class="p-6 text-center"><div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center bg-green-100"><span class="text-4xl text-green-600"><i class="fas fa-check"></i></span></div><h1 class="text-xl font-bold text-gray-800">Présence Enregistrée</h1><p class="text-gray-600 mt-3">${result.message}</p><button onclick="closeModal()" class="mt-6 w-full bg-orange-600 text-white py-2 rounded-md">Fermer</button></div>`;
             } catch (error) {
                 displayMessageInForm(form, error.message, 'error');
             } finally {
@@ -1015,23 +1015,6 @@
         }
 
         // --- UTILITAIRES API / UI (préservés, petites améliorations non invasives) ---
-        async function callApi(action, data = {}) {
-            if (!WEB_APP_URL) throw new Error('URL de l\'API non configurée.');
-            const response = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action, data })
-            });
-
-            const result = await response.json();
-            // CORRECTION: Transmettre l'objet d'erreur complet pour une meilleure gestion
-            if (!result.success) {
-                const err = new Error(result.error || 'Erreur inconnue de l\'API.');
-                throw Object.assign(err, result); // Ajoute les autres propriétés de la réponse (ex: needsRegistration)
-            }
-            return result;
-        }
 
         function setLoading(isLoading, formElement) {
             const submitBtn = formElement ? formElement.querySelector('.submitBtn') : null;
@@ -1128,6 +1111,25 @@
 
             autoSlideInterval = setInterval(next, 8000); // Défilement automatique toutes les 8 secondes
         });
+
+        // CORRECTION: Déplacer la fonction callApi ici pour qu'elle soit globale et accessible par le scanner
+        async function callApi(action, data = {}) {
+            if (!WEB_APP_URL) throw new Error('URL de l\'API non configurée.');
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action, data })
+            });
+
+            const result = await response.json();
+            // CORRECTION: Transmettre l'objet d'erreur complet pour une meilleure gestion
+            if (!result.success) {
+                const err = new Error(result.error || 'Erreur inconnue de l\'API.');
+                throw Object.assign(err, result); // Ajoute les autres propriétés de la réponse (ex: needsRegistration)
+            }
+            return result;
+        }
 
         // --- NOUVEAU: Logique du Scanner QR Code Intégré ---
         function setupMainScanner() {
