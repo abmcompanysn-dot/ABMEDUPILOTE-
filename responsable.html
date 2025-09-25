@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- CORRECTION: Ajout de Chart.js -->
     <style>
         body { 
             font-family: 'Inter', sans-serif;
@@ -50,7 +51,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-4">
-                    <button id="messages-btn" class="relative text-white hover:text-violet-300">
+                    <button id="messages-btn" onclick="openMessagingUI()" class="relative text-white hover:text-violet-300 cursor-pointer">
                         <i class="fas fa-envelope text-xl"></i>
                         <span id="unread-dot" class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white hidden"></span>
                     </button>
@@ -157,7 +158,10 @@
 
         <!-- NOUVEAU: Contenu pour la liste des étudiants -->
         <div id="students-content" class="tab-content hidden bg-white p-6 rounded-xl shadow-sm">
-            <h3 class="text-xl font-bold text-gray-900 mb-4">Étudiants de la classe</h3>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-900">Étudiants de la classe</h3>
+                <button onclick="exportStudentList()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg text-sm flex items-center gap-2"><i class="fas fa-file-csv"></i>Exporter en CSV</button>
+            </div>
             <div id="students-list-container" class="max-h-[80vh] overflow-y-auto table-responsive-wrapper"><p>Chargement de la liste des étudiants...</p></div>
         </div>
 
@@ -210,6 +214,30 @@
     </div>
     <div id="spinner-overlay" class="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center hidden z-50">
         <div class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-orange-500"></div>
+    </div>
+
+    <!-- NOUVEAU: UI de Messagerie (copié de etudiant.html) -->
+    <div id="messaging-ui" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white w-full max-w-4xl h-[90vh] rounded-lg shadow-2xl flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h2 class="text-xl font-bold text-gray-800">Messagerie</h2>
+                <button onclick="closeMessagingUI()" class="text-gray-500 hover:text-red-600 text-3xl leading-none">&times;</button>
+            </div>
+            <div class="flex-grow flex overflow-hidden">
+                <div id="message-list-panel" class="w-1/3 border-r overflow-y-auto p-2">
+                    <div class="flex border-b mb-2"><button id="inbox-btn" class="flex-1 p-2 text-center font-semibold border-b-2 border-orange-500 text-orange-600" onclick="switchMessageBox('inbox')">Boîte de réception</button><button id="sent-btn" class="flex-1 p-2 text-center font-semibold text-gray-500" onclick="switchMessageBox('sent')">Messages envoyés</button></div>
+                    <button onclick="showNewMessageForm()" class="w-full bg-orange-600 text-white py-2 rounded-md mb-2">Nouveau Message</button>
+                    <div id="message-list-container"><p class="text-center text-sm text-gray-500 p-4">Chargement...</p></div>
+                </div>
+                <div id="message-view-panel" class="w-2/3 flex flex-col">
+                    <div id="message-content-view" class="p-6 overflow-y-auto flex-grow hidden"><h3 id="message-subject" class="text-lg font-bold mb-1"></h3><p id="message-sender" class="text-sm text-gray-500 mb-4"></p><div id="message-body" class="prose max-w-none"></div></div>
+                    <div id="new-message-form-view" class="p-6 overflow-y-auto flex-grow hidden">
+                        <h3 class="text-lg font-bold mb-4">Nouveau Message</h3>
+                        <form id="new-message-form" class="space-y-4"><div><label for="recipient" class="block text-sm font-medium text-gray-700">Destinataire</label><select id="recipient" required class="mt-1 block w-full"></select></div><div><label for="subject" class="block text-sm font-medium text-gray-700">Sujet</label><input type="text" id="subject" required class="mt-1 block w-full"></div><div><label for="body" class="block text-sm font-medium text-gray-700">Message</label><textarea id="body" required rows="8" class="mt-1 block w-full"></textarea></div><button type="submit" class="bg-green-600 text-white py-2 px-4 rounded-md">Envoyer</button></form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -419,7 +447,7 @@
                 const container = document.getElementById('qr-code-container');
                 const img = document.getElementById('qr-code-img'); 
                 const downloadBtn = document.getElementById('qr-download-btn');
-                const shareBtn = document.getElementById('qr-share-btn');
+                // const shareBtn = document.getElementById('qr-share-btn'); // Ce bouton n'existe pas dans le HTML
 
                 img.src = qrCodeUrl;
                 downloadBtn.onclick = () => downloadQrCode(qrCodeUrl, `qr-code-presence-${className}.png`);
@@ -427,7 +455,7 @@
                 shareBtn.onclick = () => shareQrCode(qrCodeUrl, `QR Code de présence pour ${className}`, `qr-code-presence-${className}.png`);
 
                 container.classList.remove('hidden');
-                showModal('Succès', 'Le QR Code de présence a été généré.');
+                // showModal('Succès', 'Le QR Code de présence a été généré.'); // On évite la modale pour ne pas cacher le QR code
             } catch (error) {
                 showModal('Erreur', error.message);
             } finally {
@@ -638,6 +666,47 @@
             }
         }
 
+        // NOUVEAU: Exporte la liste des étudiants de la classe en CSV
+        async function exportStudentList() {
+            showSpinner(true);
+            try {
+                const result = await callResponsableApi('responsableExportStudents');
+                const { csvContent, fileName } = result.data;
+
+                const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' }); // \uFEFF for BOM to handle accents in Excel
+                
+                const link = document.createElement("a");
+                if (link.download !== undefined) {
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", fileName);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+                showModal('Succès', 'La liste des étudiants a été exportée.');
+            } catch (error) {
+                showModal('Erreur d\'Exportation', error.message);
+            } finally {
+                showSpinner(false);
+            }
+        }
+
+        // CORRECTION: Déplacer la fonction pour la rendre globale et accessible par le `onclick`
+        async function markStudentPresent(studentId) {
+            showSpinner(true);
+            try {
+                const result = await callResponsableApi('scanStudentForAttendance', { studentId });
+                showModal('Présence Confirmée', result.message);
+            } catch (error) {
+                showModal('Erreur de Pointage', error.message);
+            } finally {
+                showSpinner(false);
+                closeModal(); // Fermer la modale de confirmation
+            }
+        }
+
         // NOUVEAU: Logique du Scanner QR Code pour le responsable
         function setupScanner() {
             const scanQrBtn = document.getElementById('scan-qr-btn');
@@ -696,19 +765,6 @@
                 if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop();
                 scannerContainer.classList.add('hidden');
             });
-        }
-
-        // NOUVEAU: Fonction pour marquer un étudiant présent via scan
-        async function markStudentPresent(studentId) {
-            showSpinner(true);
-            try {
-                const result = await callResponsableApi('scanStudentForAttendance', { studentId });
-                showModal('Présence Confirmée', result.message);
-            } catch (error) {
-                showModal('Erreur de Pointage', error.message);
-            } finally {
-                showSpinner(false);
-            }
         }
 
         // ==================================================================
@@ -817,10 +873,10 @@
 
         async function checkUnreadMessages() {
             // CORRECTION: On doit récupérer les infos de la classe pour que le backend puisse filtrer les messages
-            const dashboardResult = await callResponsableApi('responsableGetDashboardData');
-            const classInfo = getResponsableClassInfo(sessionStorage.getItem(RESPONSABLE_SESSION_KEY), dashboardResult.data);
-
-            const result = await callResponsableApi('getMessages', { classId: classInfo.classId, universityId: classInfo.universityId });
+            // La fonction getResponsableDashboardData renvoie déjà le nom de la classe, qui est suffisant.
+            const dashboardData = await callResponsableApi('responsableGetDashboardData');
+            const className = dashboardData.data.className;
+            const result = await callResponsableApi('getMessages', { className: className });
             const unreadCount = result.data.unreadCount;
             document.getElementById('unread-dot').classList.toggle('hidden', unreadCount === 0);
         }
@@ -831,6 +887,11 @@
         const modalContent = document.getElementById('modal-content');
         const closeModalBtn = document.getElementById('close-modal');
         const spinnerOverlay = document.getElementById('spinner-overlay');
+
+        // CORRECTION: Créer une fonction globale pour fermer la modale
+        function closeModal() {
+            if (modal) modal.classList.add('hidden');
+        }
 
         closeModalBtn.onclick = () => modal.classList.add('hidden');
         modal.onclick = (event) => {
