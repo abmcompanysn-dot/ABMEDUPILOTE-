@@ -50,15 +50,18 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-4">
-                    <!-- NOUVEAU: Bouton de messagerie -->
-                    <button id="messages-btn" onclick="openMessagingUI()" class="relative text-white hover:text-violet-300">
+                    <button id="messages-btn" class="relative text-white hover:text-violet-300">
                         <i class="fas fa-envelope text-xl"></i>
                         <span id="unread-dot" class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white hidden"></span>
                     </button>
                     <button id="profile-button" class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition">
                         <i class="fas fa-user"></i>
                     </button>
-                    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-semibold text-sm transition-all">Déconnexion</button>
+                    <!-- AMÉLIORATION: Bouton de déconnexion responsive -->
+                    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg font-semibold text-sm transition-all sm:px-4">
+                        <span class="hidden sm:inline">Déconnexion</span>
+                        <i class="fas fa-sign-out-alt sm:hidden text-lg w-5 text-center"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -67,21 +70,22 @@
     <main id="dashboard-container" class="max-w-6xl mx-auto p-4 sm:p-8">
         <h2 id="class-name-header" class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Gestion de la classe : Chargement...</h2>
         <!-- NOUVEAU: Interface à onglets -->
-        <div class="mb-6 border-b border-gray-200">
-            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+        <div class="mb-6 border-b border-gray-200 overflow-hidden">
+            <nav class="-mb-px flex space-x-6 overflow-x-auto" aria-label="Tabs">
                 <button class="resp-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-orange-500 text-orange-600" data-target="planning-content">
                     Planning
                 </button>
                 <button class="resp-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="students-content">
                     Étudiants de la classe
                 </button>
+                <button class="resp-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="stats-content">Statistiques</button>
                 <button class="resp-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="attendance-content">
                     Historique des Présences
                 </button>
             </nav>
         </div>
 
-        <div id="planning-content" class="tab-content grid md:grid-cols-3 gap-8">
+        <div id="planning-content" class="tab-content grid lg:grid-cols-3 gap-8">
             <div class="md:col-span-1 space-y-8">
                 <!-- NOUVEAU: Panneau d'outils avec accordéon -->
                 <div class="bg-white p-6 rounded-xl shadow-sm space-y-2">
@@ -136,7 +140,7 @@
                     </div>
                 </div>
             </div>
-            <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm">
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm">
                 <div class="mb-4">
                     <h3 class="text-xl font-bold text-gray-900">Planning des Cours</h3>
                 </div>
@@ -153,13 +157,13 @@
 
         <!-- NOUVEAU: Contenu pour la liste des étudiants -->
         <div id="students-content" class="tab-content hidden bg-white p-6 rounded-xl shadow-sm">
-            <h3 class="text-xl font-bold text-gray-900 mb-4">Liste des Étudiants</h3>
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Étudiants de la classe</h3>
             <div id="students-list-container" class="max-h-[80vh] overflow-y-auto table-responsive-wrapper"><p>Chargement de la liste des étudiants...</p></div>
         </div>
 
         <!-- NOUVEAU: Contenu pour l'historique des présences -->
         <div id="attendance-content" class="tab-content hidden bg-white p-6 rounded-xl shadow-sm">
-            <h3 class="text-xl font-bold text-gray-900 mb-4">Historique des Présences</h3>
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Historique des Présences de la classe</h3>
             <div id="attendance-list-container" class="max-h-[80vh] overflow-y-auto table-responsive-wrapper"><p>Chargement de l'historique...</p></div>
         </div>
     </main>
@@ -225,6 +229,11 @@
             } else {
                 loadDashboard();
                 setupAddCourseForm(); // NOUVEAU: Initialiser le formulaire une seule fois
+                
+                // NOUVEAU: Attacher l'événement au bouton de messagerie
+                const msgBtn = document.getElementById('messages-btn');
+                if (msgBtn) msgBtn.onclick = openMessagingUI;
+
                 checkUnreadMessages(); // NOUVEAU: Vérifier les messages
                 setupScanner(); // NOUVEAU: Initialiser le scanner
             }
@@ -273,6 +282,10 @@
                     }
                     if (tab.dataset.target === 'attendance-content' && !targetContent.dataset.loaded) {
                         loadClassAttendance();
+                        targetContent.dataset.loaded = 'true';
+                    }
+                    if (tab.dataset.target === 'stats-content' && !targetContent.dataset.loaded) {
+                        loadClassStats();
                         targetContent.dataset.loaded = 'true';
                     }
                 }
@@ -353,8 +366,8 @@
         async function updateStatus(courseId, status) {
             if (!confirm(`Voulez-vous vraiment ${status.toLowerCase()} ce cours ?`)) return;
             showSpinner(true);
-            try {
-                const result = await callResponsableApi('updateCourseStatusForResponsable', { courseId, status });
+            try { // CORRECTION: L'action était incorrecte
+                const result = await callResponsableApi('responsableUpdateCourseStatus', { courseId, status });
                 showModal('Succès', result.message);
                 loadDashboard(true); // Recharger avec spinner
             } catch (error) {
@@ -594,6 +607,37 @@
             }
         }
 
+        // NOUVEAU: Charge et affiche les statistiques de la classe
+        async function loadClassStats() {
+            const kpiContainer = document.getElementById('stats-kpi-container');
+            kpiContainer.innerHTML = '<p>Chargement des statistiques...</p>';
+            try {
+                const result = await callResponsableApi('responsableGetStats');
+                const stats = result.data;
+
+                kpiContainer.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+                        <p class="text-4xl font-bold text-orange-600">${stats.studentCount}</p><p class="text-sm text-gray-500 mt-1">Étudiants</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+                        <p class="text-4xl font-bold text-orange-600">${stats.averageAttendance.toFixed(1)}%</p><p class="text-sm text-gray-500 mt-1">Présence Moyenne</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+                        <p class="text-4xl font-bold text-red-600">${stats.criticalStudentsCount}</p><p class="text-sm text-gray-500 mt-1">Élèves en Difficulté</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+                        <p class="text-4xl font-bold text-orange-600">${stats.totalCourses}</p><p class="text-sm text-gray-500 mt-1">Cours Programmés</p>
+                    </div>
+                `;
+
+                new Chart(document.getElementById('chart-attendance-by-student'), { type: 'bar', data: { labels: stats.attendanceByStudent.labels, datasets: [{ label: 'Taux de Présence (%)', data: stats.attendanceByStudent.data, backgroundColor: '#fb923c' }] }, options: { indexAxis: 'y', plugins: { title: { display: true, text: 'Taux de Présence par Étudiant' } }, scales: { x: { min: 0, max: 100 } } } });
+                new Chart(document.getElementById('chart-courses-status'), { type: 'doughnut', data: { labels: Object.keys(stats.coursesStatus), datasets: [{ label: 'Statut des cours', data: Object.values(stats.coursesStatus), backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'] }] }, options: { plugins: { title: { display: true, text: 'Répartition des Statuts de Cours' } } } });
+
+            } catch (error) {
+                kpiContainer.innerHTML = `<p class="text-red-500">Erreur de chargement des statistiques: ${error.message}</p>`;
+            }
+        }
+
         // NOUVEAU: Logique du Scanner QR Code pour le responsable
         function setupScanner() {
             const scanQrBtn = document.getElementById('scan-qr-btn');
@@ -772,7 +816,11 @@
         }
 
         async function checkUnreadMessages() {
-            const result = await callResponsableApi('getMessages');
+            // CORRECTION: On doit récupérer les infos de la classe pour que le backend puisse filtrer les messages
+            const dashboardResult = await callResponsableApi('responsableGetDashboardData');
+            const classInfo = getResponsableClassInfo(sessionStorage.getItem(RESPONSABLE_SESSION_KEY), dashboardResult.data);
+
+            const result = await callResponsableApi('getMessages', { classId: classInfo.classId, universityId: classInfo.universityId });
             const unreadCount = result.data.unreadCount;
             document.getElementById('unread-dot').classList.toggle('hidden', unreadCount === 0);
         }
