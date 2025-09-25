@@ -3,7 +3,7 @@
 /* ================================================================== */
 
 
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyPAJ-R_ITiyQqY2Wa_H_ffwPJc71XdOZQZT7ouqCe9jlUvmLebaPp7UVl4uq0GIrD93g/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby3HLf4EK3WkWKz2AOh1VYiLG-P34uAnauZsXOjN8noNgGDKBWVnSZyYnSinBS0XmeVMg/exec;
 // CORRECTION: Utilisation des noms de clés de session cohérents avec les autres fichiers.
 // --- Clés de session et autres constantes ---
 const ADMIN_SESSION_KEY = 'abm_admin_token';
@@ -17,5 +17,6 @@ const PAGE_URLS = {
     STUDENT: 'etudiant.html',
     RESPONSABLE: 'responsable.html'
 };
+
 
 
