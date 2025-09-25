@@ -1,0 +1,8 @@
+# Fichier de configuration contenant les clés et URLs sensibles
+config.js
+
+# Fichiers d'environnement
+.env*
+
+# Dépendances Node.js (si vous en ajoutez plus tard)
+node_modules/

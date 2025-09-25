@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Espace Responsable - ABM EduPilote+</title>
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/bYspDhjW/Chat-GPT-Image-25-sept-2025-14-42-08.png">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif;
+            background-color: #fffbeb; /* bg-amber-50 */
+        }
+        h1, h2, h3 { font-family: 'Poppins', sans-serif; }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+        }
+        /* NOUVEAU: Classe pour rendre les tableaux scrollables sur mobile */
+        .table-responsive-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .skeleton-loader {
+            background-color: #e2e8f0;
+            border-radius: 0.5rem;
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+    <script src="config.js"></script><script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body class="bg-violet-50">
+
+    <header class="bg-gradient-to-r from-orange-600 to-amber-500 shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center space-x-3">
+                    <img src="https://i.postimg.cc/bYspDhjW/Chat-GPT-Image-25-sept-2025-14-42-08.png" alt="Logo ABM EduPilote" class="w-10 h-10 bg-white p-1 rounded-md" />
+                    <div>
+                        <a href="index.html" class="text-white font-semibold text-lg">ABM EduPilote+</a>
+                        <p class="text-xs text-amber-200 -mt-0.5">Espace Responsable</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <!-- NOUVEAU: Bouton de messagerie -->
+                    <button id="messages-btn" onclick="openMessagingUI()" class="relative text-white hover:text-violet-300">
+                        <i class="fas fa-envelope text-xl"></i>
+                        <span id="unread-dot" class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white hidden"></span>
+                    </button>
+                    <button id="profile-button" class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-semibold text-sm transition-all">Déconnexion</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="dashboard-container" class="max-w-6xl mx-auto p-4 sm:p-8">
+        <h2 id="class-name-header" class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Gestion de la classe : Chargement...</h2>
+        <!-- NOUVEAU: Interface à onglets -->
+        <div class="mb-6 border-b border-gray-200">
+            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                <button class="resp-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-orange-500 text-orange-600" data-target="planning-content">
+                    Planning
+                </button>
+                <button class="resp-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="students-content">
+                    Étudiants de la classe
+                </button>
+                <button class="resp-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="attendance-content">
+                    Historique des Présences
+                </button>
+            </nav>
+        </div>
+
+        <div id="planning-content" class="tab-content grid md:grid-cols-3 gap-8">
+            <div class="md:col-span-1 space-y-8">
+                <!-- NOUVEAU: Panneau d'outils avec accordéon -->
+                <div class="bg-white p-6 rounded-xl shadow-sm space-y-2">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Outils & Actions</h3>
+                    <!-- Accordéon 1: Planifier un cours -->
+                    <div class="border-b border-gray-200 pb-2">
+                        <button class="accordion-toggle w-full flex justify-between items-center text-left font-semibold text-gray-800 py-2">
+                            <span><i class="fas fa-plus-circle mr-2 text-orange-500"></i>Planifier un Cours</span>
+                            <i class="fas fa-chevron-down transform transition-transform"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <form id="add-course-form" class="pt-4 space-y-4">
+                                <!-- ... les champs du formulaire restent les mêmes ... -->
+                                <div><label for="course-matiere" class="block text-sm font-medium text-gray-700">Matière</label><input type="text" id="course-matiere" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"></div>
+                                <div><label for="course-enseignant" class="block text-sm font-medium text-gray-700">Enseignant</label><input type="text" id="course-enseignant" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"></div>
+                                <div><label for="course-date" class="block text-sm font-medium text-gray-700">Date</label><input type="date" id="course-date" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"></div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><label for="course-start-time" class="block text-sm font-medium text-gray-700">Début</label><input type="time" id="course-start-time" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"></div>
+                                    <div><label for="course-end-time" class="block text-sm font-medium text-gray-700">Fin</label><input type="time" id="course-end-time" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"></div>
+                                </div>
+                                <button type="submit" class="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700">Ajouter</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Accordéon 2: Lien d'inscription -->
+                    <div class="border-b border-gray-200 pb-2">
+                        <button class="accordion-toggle w-full flex justify-between items-center text-left font-semibold text-gray-800 py-2">
+                            <span><i class="fas fa-link mr-2 text-blue-500"></i>Lien d'Inscription</span>
+                            <i class="fas fa-chevron-down transform transition-transform"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="pt-4 space-y-3">
+                                <p class="text-sm text-gray-600">Partagez ce lien pour que les étudiants s'inscrivent à votre classe.</p>
+                                <button onclick="generateRegLink()" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">Générer le lien</button>
+                                <div id="reg-link-container" class="hidden"><input type="text" id="reg-link-input" readonly class="w-full bg-gray-100 px-3 py-2 border rounded-md"><button onclick="copyToClipboard('reg-link-input')" class="mt-2 w-full text-sm bg-gray-600 text-white py-2 rounded-md hover:bg-gray-700">Copier</button></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Accordéon 3: QR Code de présence -->
+                    <div class="pb-2">
+                        <button class="accordion-toggle w-full flex justify-between items-center text-left font-semibold text-gray-800 py-2">
+                            <span><i class="fas fa-qrcode mr-2 text-green-500"></i>QR Code de Présence</span>
+                            <i class="fas fa-chevron-down transform transition-transform"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="pt-4 space-y-3">
+                                <p class="text-sm text-gray-600">Affichez ce QR code pour le pointage des présences.</p>
+                                <button onclick="generateAttendanceQrCode()" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">Générer le QR Code</button>
+                                <div id="qr-code-container" class="hidden text-center"><img id="qr-code-img" src="" alt="QR Code" class="mx-auto w-full max-w-[200px] rounded-lg border"><button id="qr-download-btn" class="mt-2 w-full text-sm bg-gray-600 text-white py-2 rounded-md hover:bg-gray-700">Télécharger</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm">
+                <div class="mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">Planning des Cours</h3>
+                </div>
+                <div id="planning-table-container" class="max-h-[80vh] overflow-y-auto pr-2">
+                    <!-- SKELETON LOADER -->
+                    <div class="space-y-4 animate-pulse">
+                        <div class="h-24 bg-gray-200 rounded-lg"></div>
+                        <div class="h-24 bg-gray-200 rounded-lg"></div>
+                        <div class="h-24 bg-gray-200 rounded-lg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOUVEAU: Contenu pour la liste des étudiants -->
+        <div id="students-content" class="tab-content hidden bg-white p-6 rounded-xl shadow-sm">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Liste des Étudiants</h3>
+            <div id="students-list-container" class="max-h-[80vh] overflow-y-auto table-responsive-wrapper"><p>Chargement de la liste des étudiants...</p></div>
+        </div>
+
+        <!-- NOUVEAU: Contenu pour l'historique des présences -->
+        <div id="attendance-content" class="tab-content hidden bg-white p-6 rounded-xl shadow-sm">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Historique des Présences</h3>
+            <div id="attendance-list-container" class="max-h-[80vh] overflow-y-auto table-responsive-wrapper"><p>Chargement de l'historique...</p></div>
+        </div>
+    </main>
+
+    <!-- NOUVEAU: Bouton flottant pour le scanner -->
+    <button id="scan-qr-btn" class="fixed bottom-6 right-6 bg-orange-600 hover:bg-orange-700 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center z-40 transition-transform hover:scale-110" aria-label="Scanner un QR Code Étudiant">
+        <i class="fas fa-qrcode text-2xl"></i>
+    </button>
+
+    <!-- NOUVEAU: Conteneur pour le scanner QR Code -->
+    <div id="qr-scanner-container" class="fixed inset-0 bg-black/80 flex-col items-center justify-center p-4 hidden z-50">
+        <p class="text-white text-lg mb-4 font-medium">Scanner le QR Code de l'étudiant</p>
+        <div id="qr-reader" class="w-full max-w-sm bg-gray-800 rounded-lg overflow-hidden border-4 border-orange-500 shadow-lg"></div>
+        <button id="close-scanner-btn" class="mt-6 bg-white/90 text-black font-bold py-2 px-8 rounded-full hover:bg-white transition-all">Annuler</button>
+    </div>
+
+    <!-- NOUVEAU: Modale pour le profil du responsable -->
+    <div id="profile-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="relative bg-white rounded-xl shadow-lg w-full max-w-md flex flex-col">
+            <div class="p-6 text-center">
+                <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-orange-100 flex items-center justify-center">
+                    <span class="text-5xl text-orange-500"><i class="fas fa-user-tie"></i></span>
+                </div>
+                <h3 id="profile-modal-name" class="text-2xl font-bold text-gray-800">Chargement...</h3>
+                <p id="profile-modal-email" class="text-gray-500 mt-1">...</p>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 rounded-b-xl">
+                <button id="close-profile-modal" class="w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal et Spinner (copiés de admin.html pour la cohérence) -->
+    <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="relative bg-white rounded-xl shadow-lg w-full max-w-md flex flex-col" style="max-height: 90vh;">
+            <div class="flex-shrink-0 px-6 py-4 border-b border-gray-200">
+                <h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900">Résultat</h3>
+            </div>
+            <div id="modal-content" class="flex-grow overflow-y-auto p-6"></div>
+            <div class="flex-shrink-0 px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+                <button id="close-modal" class="w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">Fermer</button>
+            </div>
+        </div>
+    </div>
+    <div id="spinner-overlay" class="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center hidden z-50">
+        <div class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-orange-500"></div>
+    </div>
+
+    <script>
+        // --- AUTHENTIFICATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tokenFromUrl = urlParams.get('token');
+
+            if (tokenFromUrl) {
+                sessionStorage.setItem(RESPONSABLE_SESSION_KEY, tokenFromUrl);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            const sessionToken = sessionStorage.getItem(RESPONSABLE_SESSION_KEY);
+            if (!sessionToken) {
+                window.location.href = 'index.html'; 
+            } else {
+                loadDashboard();
+                setupAddCourseForm(); // NOUVEAU: Initialiser le formulaire une seule fois
+                checkUnreadMessages(); // NOUVEAU: Vérifier les messages
+                setupScanner(); // NOUVEAU: Initialiser le scanner
+            }
+
+            // NOUVEAU: Logique pour la modale de profil
+            const profileButton = document.getElementById('profile-button');
+            const profileModal = document.getElementById('profile-modal');
+            const closeProfileModalBtn = document.getElementById('close-profile-modal');
+
+            if (profileButton && profileModal && closeProfileModalBtn) {
+                profileButton.addEventListener('click', () => profileModal.classList.remove('hidden'));
+                closeProfileModalBtn.addEventListener('click', () => profileModal.classList.add('hidden'));
+                profileModal.addEventListener('click', (event) => {
+                    if (event.target === profileModal) profileModal.classList.add('hidden');
+                });
+            }
+
+            // NOUVEAU: Logique pour l'accordéon
+            document.querySelectorAll('.accordion-toggle').forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = button.nextElementSibling;
+                    content.style.maxHeight = content.style.maxHeight ? null : content.scrollHeight + "px";
+                    button.querySelector('i.fa-chevron-down').classList.toggle('rotate-180');
+                });
+            });
+        });
+
+        // NOUVEAU: Logique des onglets
+        document.querySelectorAll('.resp-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.resp-tab').forEach(t => {
+                    t.classList.remove('border-orange-500', 'text-orange-600');
+                    t.classList.add('border-transparent', 'text-gray-500');
+                });
+                tab.classList.add('border-orange-500', 'text-orange-600');
+                tab.classList.remove('border-transparent', 'text-gray-500');
+
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                const targetContent = document.getElementById(tab.dataset.target);
+                if (targetContent) {
+                    targetContent.classList.remove('hidden');
+                    // NOUVEAU: Charger les données de l'onglet cliqué seulement si nécessaire
+                    if (tab.dataset.target === 'students-content' && !targetContent.dataset.loaded) {
+                        loadClassStudents();
+                        targetContent.dataset.loaded = 'true';
+                    }
+                    if (tab.dataset.target === 'attendance-content' && !targetContent.dataset.loaded) {
+                        loadClassAttendance();
+                        targetContent.dataset.loaded = 'true';
+                    }
+                }
+            });
+        });
+
+        // ... (le reste du code est déplacé pour une meilleure organisation)
+
+        function renderPlanning(courses) {
+            const container = document.getElementById('planning-table-container');
+            if (!courses || courses.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <i class="fas fa-calendar-times text-4xl text-gray-300"></i>
+                        <h4 class="mt-4 text-lg font-semibold text-gray-600">Aucun cours planifié</h4>
+                        <p class="text-sm text-gray-400">Utilisez le formulaire pour ajouter un cours au planning.</p>
+                    </div>`;
+                return;
+            }
+
+            // Création de la timeline
+            const timeline = document.createElement('div');
+            timeline.className = 'space-y-6';
+            timeline.innerHTML = courses.map(course => {
+                const statusColor = course.STATUT === 'Confirmé' ? 'bg-green-100 text-green-800' : (course.STATUT === 'Annulé' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800');
+                const statusIcon = course.STATUT === 'Confirmé' ? '✅' : (course.STATUT === 'Annulé' ? '❌' : '⏳');
+                return `
+                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-semibold text-gray-800">${course.MATIERE}</p>
+                                <p class="text-sm text-gray-500">${new Date(course.DATE_COURS).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                <p class="text-sm text-gray-500">${new Date(course.HEURE_DEBUT).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${new Date(course.HEURE_FIN).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                            </div>
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColor}">${statusIcon} ${course.STATUT}</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200 text-sm space-x-4">
+                            ${course.STATUT !== 'Confirmé' ? `<button onclick="updateStatus('${course.ID_COURS}', 'Confirmé')" class="font-medium text-green-600 hover:text-green-900">Confirmer</button>` : ''}
+                            ${course.STATUT !== 'Annulé' ? `<button onclick="updateStatus('${course.ID_COURS}', 'Annulé')" class="font-medium text-red-600 hover:text-red-900">Annuler</button>` : ''}
+                            <button onclick="deleteCourse('${course.ID_COURS}')" class="font-medium text-gray-500 hover:text-red-900">Supprimer</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = '';
+            container.appendChild(timeline);
+        }
+
+        function setupAddCourseForm() {
+            const form = document.getElementById('add-course-form');
+            // Remplacer addEventListener par onsubmit pour éviter les listeners multiples
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                const payload = {
+                    matiere: document.getElementById('course-matiere').value,
+                    enseignant: document.getElementById('course-enseignant').value,
+                    date: document.getElementById('course-date').value,
+                    startTime: document.getElementById('course-start-time').value,
+                    endTime: document.getElementById('course-end-time').value,
+                };
+                showSpinner(true);
+                try {
+                    e.submitter.disabled = true;
+                    const result = await callResponsableApi('responsableAddCourse', { payload });
+                    showModal('Succès', result.message);
+                    form.reset();
+                    loadDashboard(true); // Recharger avec spinner
+                } catch (error) {
+                    showModal('Erreur', error.message);
+                } finally {
+                    showSpinner(false);
+                    if (e.submitter) e.submitter.disabled = false;
+                }
+            };
+        }
+
+        async function updateStatus(courseId, status) {
+            if (!confirm(`Voulez-vous vraiment ${status.toLowerCase()} ce cours ?`)) return;
+            showSpinner(true);
+            try {
+                const result = await callResponsableApi('updateCourseStatusForResponsable', { courseId, status });
+                showModal('Succès', result.message);
+                loadDashboard(true); // Recharger avec spinner
+            } catch (error) {
+                showModal('Erreur', error.message);
+            } finally {
+                showSpinner(false);
+            }
+        }
+
+        // NOUVEAU: Gère la suppression d'un cours
+        async function deleteCourse(courseId) {
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer ce cours ? Cette action est irréversible.`)) return;
+            showSpinner(true);
+            try {
+                const result = await callResponsableApi('responsableDeleteCourse', { courseId });
+                showModal('Succès', result.message);
+                loadDashboard(true); // Recharger avec spinner
+            } catch (error) {
+                showModal('Erreur', error.message);
+            } finally {
+                showSpinner(false);
+            }
+        }
+
+        async function generateRegLink() {
+            showSpinner(true);
+            try {
+                const result = await callResponsableApi('responsableGetRegLink');
+                const container = document.getElementById('reg-link-container');
+                const input = document.getElementById('reg-link-input');
+                input.value = result.data.url;
+                container.classList.remove('hidden');
+                // The copy/share is now handled by dedicated buttons
+                showModal('Succès', 'Le lien d\'inscription a été généré.');
+            } catch (error) {
+                showModal('Erreur', error.message);
+            } finally {
+                showSpinner(false);
+            }
+        }
+
+        // NOUVEAU: Génère le QR code de présence pour la classe
+        async function generateAttendanceQrCode() {
+            showSpinner(true);
+            try {
+                const result = await callResponsableApi('responsableGetQrCode');
+                const { qrCodeUrl, className } = result.data;
+
+                const container = document.getElementById('qr-code-container');
+                const img = document.getElementById('qr-code-img'); 
+                const downloadBtn = document.getElementById('qr-download-btn');
+                const shareBtn = document.getElementById('qr-share-btn');
+
+                img.src = qrCodeUrl;
+                downloadBtn.onclick = () => downloadQrCode(qrCodeUrl, `qr-code-presence-${className}.png`);
+                
+                shareBtn.onclick = () => shareQrCode(qrCodeUrl, `QR Code de présence pour ${className}`, `qr-code-presence-${className}.png`);
+
+                container.classList.remove('hidden');
+                showModal('Succès', 'Le QR Code de présence a été généré.');
+            } catch (error) {
+                showModal('Erreur', error.message);
+            } finally {
+                showSpinner(false);
+            }
+        }
+
+        // Fonctions utilitaires pour copier et partager
+        function copyToClipboard(inputId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const textToCopy = input.value;
+            if (navigator.clipboard) { // L'API moderne du presse-papiers
+                navigator.clipboard.writeText(textToCopy).then(() => { showModal('Succès', 'Lien copié dans le presse-papiers !'); }, () => { showModal('Erreur', 'La copie a échoué.'); });
+            } else {
+                input.select();
+                input.setSelectionRange(0, 99999);
+                try {
+                    document.execCommand('copy');
+                    showModal('Copié !', 'Le lien a été copié dans le presse-papiers (mode de compatibilité).');
+                } catch (err) {
+                    showModal('Erreur', 'La copie a échoué. Veuillez le faire manuellement.');
+                }
+            }
+        }
+
+        async function shareLink(url, title) {
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: title, text: 'Utilisez ce lien pour vous inscrire à la classe.', url: url });
+                } catch (error) {
+                    console.error('Erreur de partage:', error);
+                }
+            } else {
+                showModal('Non supporté', 'Le partage n\'est pas supporté sur ce navigateur. Veuillez copier le lien manuellement.');
+            }
+        }
+
+        // NOUVEAU: Fonction de téléchargement du QR Code (identique à admin.html)
+        async function downloadQrCode(qrUrl, fileName) {
+            try {
+                showSpinner(true);
+                const response = await fetch(qrUrl);
+                const blob = await response.blob(); // Récupère l'image en tant que données binaires
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName || 'qrcode.png';
+                link.click();
+                URL.revokeObjectURL(link.href);
+            } catch (error) {
+                console.error('Erreur de téléchargement du QR Code:', error);
+                showModal("Erreur", "Le téléchargement a échoué. Veuillez essayer de maintenir le doigt sur l'image pour la sauvegarder.");
+            } finally {
+                showSpinner(false);
+            }
+        }
+
+        // Les fonctions shareQrCode et downloadQrCode sont maintenant globales (définies dans admin.html ou un script partagé)
+        // et n'ont pas besoin d'être redéfinies ici.
+
+        async function shareQrCode(qrUrl, title, fileName) {
+            try {
+                showSpinner(true);
+                // Tenter de partager en tant que fichier d'abord
+                if (navigator.share && navigator.canShare) {
+                    const response = await fetch(qrUrl, { cache: 'no-cache' }); // Forcer le re-téléchargement pour le partage
+                    const blob = await response.blob();
+                    const file = new File([blob], fileName, { type: 'image/png' });
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({ title: title, text: 'Voici le QR code de présence.', files: [file] });
+                        return; // Success
+                    }
+                }
+                // Fallback: partager l'URL de l'image
+                if (navigator.share) {
+                    await navigator.share({ title: title, text: 'Voici le QR code de présence (ouvrez le lien pour voir l\'image).', url: qrUrl });
+                    return;
+                }
+                showModal('Non supporté', 'Le partage n\'est pas supporté. Veuillez télécharger l\'image manuellement.');
+            } catch (error) {
+                console.error('Erreur de partage:', error);
+                showModal('Erreur', `Une erreur est survenue lors du partage: ${error.message}`);
+            } finally {
+                showSpinner(false);
+            }
+        }
+
+        // NOUVEAU: Charge et affiche la liste des étudiants de la classe
+        async function loadClassStudents() {
+            const container = document.getElementById('students-list-container');
+            container.innerHTML = '<p>Chargement de la liste des étudiants...</p>';
+            try {
+                const result = await callResponsableApi('responsableGetStudents');
+                const students = result.data || [];
+
+                if (students.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-12">
+                            <i class="fas fa-users-slash text-4xl text-gray-300"></i>
+                            <h4 class="mt-4 text-lg font-semibold text-gray-600">Aucun étudiant inscrit</h4>
+                            <p class="text-sm text-gray-400">Partagez le lien d'inscription pour commencer à remplir la classe.</p>
+                        </div>`;
+                    return;
+                }
+
+                const table = document.createElement('table');
+                table.className = 'min-w-full divide-y divide-gray-200';
+                table.innerHTML = `
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom Complet</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Étudiant</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Téléphone</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${students.map(student => `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${student.NOM_COMPLET}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">${student.ID_ETUDIANT}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${student.EMAIL}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">${student.NUMERO_TELEPHONE || 'N/A'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                container.innerHTML = '';
+                container.appendChild(table);
+            } catch (error) {
+                container.innerHTML = `<p class="text-red-500">Erreur: ${error.message}</p>`;
+            }
+        }
+
+        // NOUVEAU: Charge et affiche l'historique des présences de la classe
+        async function loadClassAttendance() {
+            const container = document.getElementById('attendance-list-container');
+            container.innerHTML = '<p>Chargement de l\'historique des présences...</p>';
+            try {
+                const result = await callResponsableApi('responsableGetAttendance');
+                const scans = result.data || [];
+
+                if (scans.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-12">
+                            <i class="fas fa-history text-4xl text-gray-300"></i>
+                            <h4 class="mt-4 text-lg font-semibold text-gray-600">Aucun pointage enregistré</h4>
+                            <p class="text-sm text-gray-400">Les présences scannées apparaîtront ici.</p>
+                        </div>`;
+                    return;
+                }
+
+                const table = document.createElement('table');
+                table.className = 'min-w-full divide-y divide-gray-200';
+                table.innerHTML = `
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Heure</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étudiant</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matière</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${scans.map(scan => `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${new Date(scan.TIMESTAMP).toLocaleString('fr-FR')}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${scan.NOM_ETUDIANT} (${scan.ID_ETUDIANT})</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${scan.MATIERE}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                container.innerHTML = '';
+                container.appendChild(table);
+            } catch (error) {
+                container.innerHTML = `<p class="text-red-500">Erreur: ${error.message}</p>`;
+            }
+        }
+
+        // NOUVEAU: Logique du Scanner QR Code pour le responsable
+        function setupScanner() {
+            const scanQrBtn = document.getElementById('scan-qr-btn');
+            const scannerContainer = document.getElementById('qr-scanner-container');
+            const closeScannerBtn = document.getElementById('close-scanner-btn');
+            let html5QrCode = null;
+
+            function onScanSuccess(decodedText, decodedResult) {
+                console.log(`Code scanné = ${decodedText}`);
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop().catch(err => console.error("Erreur à l'arrêt du scanner.", err));
+                }
+                scannerContainer.classList.add('hidden');
+
+                if (decodedText.startsWith("ABM-ETU-ID:")) {
+                    const studentId = decodedText.split(':')[1];
+                    // AMÉLIORATION: Demander confirmation avant de pointer
+                    confirmAndMarkStudentPresent(studentId);
+                } else {
+                    showModal("QR Code Invalide", "Ce QR code ne semble pas être un code d'identification d'étudiant valide pour cette application.");
+                }
+            }
+
+            async function confirmAndMarkStudentPresent(studentId) {
+                showSpinner(true);
+                try {
+                    const courseResult = await callResponsableApi('responsableGetCurrentCourse');
+                    const studentResult = await callResponsableApi('responsableGetStudentDetails', { studentId });
+                    const studentName = studentResult.data.studentName;
+                    const courseName = courseResult.data.matiere;
+
+                    const confirmationHtml = `
+                        <p class="text-center">Voulez-vous marquer <strong>${studentName}</strong> (${studentId}) comme présent(e) au cours de <strong>${courseName}</strong> ?</p>
+                        <button onclick="markStudentPresent('${studentId}'); closeModal();" class="mt-4 w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">Oui, Confirmer la Présence</button>
+                    `;
+                    showModal('Confirmation de Pointage', confirmationHtml, true);
+                } catch (error) {
+                    showModal("Erreur de Confirmation", error.message);
+                } finally {
+                    showSpinner(false);
+                }
+            }
+
+            scanQrBtn.addEventListener('click', () => {
+                scannerContainer.classList.remove('hidden');
+                scannerContainer.classList.add('flex');
+                if (!html5QrCode) html5QrCode = new Html5Qrcode("qr-reader");
+                html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } }, onScanSuccess, () => {})
+                .catch(err => {
+                    showModal("Erreur Caméra", "Impossible d'accéder à la caméra. Veuillez autoriser l'accès dans les paramètres de votre navigateur.");
+                    scannerContainer.classList.add('hidden');
+                });
+            });
+
+            closeScannerBtn.addEventListener('click', () => {
+                if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop();
+                scannerContainer.classList.add('hidden');
+            });
+        }
+
+        // NOUVEAU: Fonction pour marquer un étudiant présent via scan
+        async function markStudentPresent(studentId) {
+            showSpinner(true);
+            try {
+                const result = await callResponsableApi('scanStudentForAttendance', { studentId });
+                showModal('Présence Confirmée', result.message);
+            } catch (error) {
+                showModal('Erreur de Pointage', error.message);
+            } finally {
+                showSpinner(false);
+            }
+        }
+
+        // ==================================================================
+        // NOUVEAU: LOGIQUE DE MESSAGERIE
+        // ==================================================================
+        
+        function openMessagingUI() {
+            document.getElementById('messaging-ui').classList.remove('hidden');
+            loadMessages();
+        }
+
+        function closeMessagingUI() {
+            document.getElementById('messaging-ui').classList.add('hidden');
+        }
+
+        function switchMessageBox(box) {
+            document.getElementById('inbox-btn').classList.toggle('border-orange-500', box === 'inbox');
+            document.getElementById('inbox-btn').classList.toggle('text-orange-600', box === 'inbox');
+            document.getElementById('sent-btn').classList.toggle('border-orange-500', box === 'sent');
+            document.getElementById('sent-btn').classList.toggle('text-orange-600', box === 'sent');
+            loadMessages(box);
+        }
+
+        async function loadMessages(box = 'inbox') {
+            const container = document.getElementById('message-list-container');
+            container.innerHTML = '<p>Chargement...</p>';
+            try {
+                const result = await callResponsableApi('getMessages');
+                const messages = result.data[box];
+                
+                if (messages.length === 0) {
+                    container.innerHTML = `<p class="text-center text-sm text-gray-500 p-4">Aucun message.</p>`;
+                    return;
+                }
+
+                container.innerHTML = messages.map(msg => `
+                    <div onclick="viewMessage('${msg.ID_MESSAGE}', '${box}')" class="p-3 border-b cursor-pointer hover:bg-gray-50 ${!msg.isRead && box === 'inbox' ? 'font-bold' : ''}">
+                        <p class="truncate">${msg.SUJET}</p>
+                        <p class="text-sm text-gray-600 truncate">${box === 'inbox' ? `De: ${msg.NOM_EXPEDITEUR}` : `À: ${msg.ID_DESTINATAIRE}`}</p>
+                        <p class="text-xs text-gray-400">${new Date(msg.TIMESTAMP).toLocaleString()}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = `<p class="text-red-500 p-4">${error.message}</p>`;
+            }
+        }
+
+        async function viewMessage(messageId, box) {
+            document.getElementById('new-message-form-view').classList.add('hidden');
+            document.getElementById('message-content-view').classList.remove('hidden');
+            
+            const result = await callResponsableApi('getMessages');
+            const message = result.data[box].find(m => m.ID_MESSAGE === messageId);
+
+            if (message) {
+                document.getElementById('message-subject').textContent = message.SUJET;
+                document.getElementById('message-sender').textContent = `De: ${message.NOM_EXPEDITEUR} | Le: ${new Date(message.TIMESTAMP).toLocaleString()}`;
+                document.getElementById('message-body').innerHTML = message.CORPS_MESSAGE.replace(/\n/g, '<br>');
+
+                if (box === 'inbox' && !message.isRead) {
+                    await callResponsableApi('markMessageAsRead', { messageId });
+                    checkUnreadMessages();
+                    loadMessages(); // Recharger la liste pour enlever le gras
+                }
+            }
+        }
+
+        async function showNewMessageForm() {
+            document.getElementById('message-content-view').classList.add('hidden');
+            document.getElementById('new-message-form-view').classList.remove('hidden');
+            
+            const recipientSelect = document.getElementById('recipient');
+            recipientSelect.innerHTML = '<option>Chargement...</option>';
+
+            const result = await callResponsableApi('getRecipients');
+            const { students } = result.data;
+
+            let options = '<option value="">Sélectionnez un destinataire</option>';
+            options += `<option value="CLASSE_${document.getElementById('class-name-header').textContent.split(': ')[1]}">Toute la classe</option>`;
+            options += '<optgroup label="Étudiants">';
+            students.forEach(s => options += `<option value="USER_${s.ID_ETUDIANT}">${s.NOM_COMPLET} (${s.ID_ETUDIANT})</option>`);
+            options += '</optgroup>';
+            recipientSelect.innerHTML = options;
+
+            document.getElementById('new-message-form').onsubmit = handleSendMessage;
+        }
+
+        async function handleSendMessage(e) {
+            e.preventDefault();
+            const recipientValue = document.getElementById('recipient').value;
+            const [type, id] = recipientValue.split('_');
+
+            const payload = {
+                senderName: document.getElementById('profile-modal-name').textContent,
+                senderRole: 'responsable',
+                recipientId: id,
+                recipientType: type,
+                subject: document.getElementById('subject').value,
+                body: document.getElementById('body').value
+            };
+            
+            await callResponsableApi('sendMessage', payload);
+            alert('Message envoyé !');
+            closeMessagingUI();
+        }
+
+        async function checkUnreadMessages() {
+            const result = await callResponsableApi('getMessages');
+            const unreadCount = result.data.unreadCount;
+            document.getElementById('unread-dot').classList.toggle('hidden', unreadCount === 0);
+        }
+
+        // --- FONCTIONS UTILITAIRES ---
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+        const closeModalBtn = document.getElementById('close-modal');
+        const spinnerOverlay = document.getElementById('spinner-overlay');
+
+        closeModalBtn.onclick = () => modal.classList.add('hidden');
+        modal.onclick = (event) => {
+            if (event.target == modal) modal.classList.add('hidden');
+        }
+
+        function showSpinner(show) {
+            spinnerOverlay.classList.toggle('hidden', !show);
+        }
+
+        function showModal(title, content, rawHtml = false) {
+            modalTitle.textContent = title; // AMÉLIORATION: Ajouter une icône en fonction du titre pour une meilleure UX
+            if (title.toLowerCase().includes('erreur')) {
+                modalContent.innerHTML = `<div class="text-center"><div class="text-5xl text-red-500 mb-4"><i class="fas fa-times-circle"></i></div><p>${content}</p></div>`;
+            } else if (title.toLowerCase().includes('succès')) {
+                modalContent.innerHTML = `<div class="text-center"><div class="text-5xl text-green-500 mb-4"><i class="fas fa-check-circle"></i></div><p>${content}</p></div>`;
+            } else if (rawHtml) {
+                modalContent.innerHTML = content;
+            } else {
+                modalContent.innerHTML = `<p>${content}</p>`;
+            }
+            modal.classList.remove('hidden');
+        }
+
+        async function callResponsableApi(action, data = {}) {
+            const responsableId = sessionStorage.getItem(RESPONSABLE_SESSION_KEY);
+            if (!responsableId) {
+                throw new Error('Session responsable invalide. Veuillez vous reconnecter.');
+            }
+            
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action, data: { ...data, responsableId } })
+            });
+            const result = await response.json();
+            if (!result.success) throw new Error(result.error || 'Erreur API inconnue.');
+            return result;
+        }
+    </script>
+    <script>
+        // --- LOGIQUE DE LA PAGE (réorganisée) ---
+        function logout() {
+            sessionStorage.removeItem(RESPONSABLE_SESSION_KEY);
+            window.location.href = 'index.html';
+        }
+
+        async function loadDashboard(showSpinnerOnLoad = true) {
+            if (showSpinnerOnLoad) showSpinner(true);
+            try {
+                const result = await callResponsableApi('responsableGetDashboardData');
+                const { profile, className, courses } = result.data;
+                document.getElementById('class-name-header').textContent = `Gestion de la classe : ${className}`;
+                renderPlanning(courses);
+
+                // NOUVEAU: Remplir les informations du profil
+                if (profile) {
+                    document.getElementById('profile-modal-name').textContent = profile.name || 'Nom non disponible';
+                    document.getElementById('profile-modal-email').textContent = profile.email || 'Email non disponible';
+                }
+
+            } catch (error) {
+                showModal('Erreur', `Impossible de charger le tableau de bord: ${error.message}`);
+            } finally {
+                if (showSpinnerOnLoad) showSpinner(false);
+            }
+        }
+    </script>
+
+</body>
+</html>
