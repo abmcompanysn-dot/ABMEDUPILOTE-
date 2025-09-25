@@ -469,12 +469,16 @@
             const recipientSelect = document.getElementById('recipient');
             recipientSelect.innerHTML = '<option>Chargement...</option>';
 
+            // CORRECTION: La logique était incorrecte. Il faut d'abord récupérer les informations de l'étudiant
+            // pour connaître sa classe et son université, PUIS appeler getRecipients avec ces informations.
             const studentId = sessionStorage.getItem(STUDENT_SESSION_KEY);
-            // CORRECTION: On doit récupérer les infos de l'étudiant pour connaître sa classe et son université
-            const studentInfoResult = await callApi('getPublicStudentProfile', { studentId });
-            const studentInfo = studentInfoResult.data.student;
+            const studentProfileResult = await callApi('getPublicStudentProfile', { studentId });
+            const studentProfile = studentProfileResult.data.student;
 
-            const result = await callApi('getRecipients', { studentId, classId: studentInfo.ID_CLASSE_FK, universityId: studentInfo.ID_UNIVERSITE_FK });
+            const result = await callApi('getRecipients', { 
+                studentId: studentId, 
+                classId: studentProfile.ID_CLASSE_FK 
+            });
             const { responsables, students } = result.data;
 
             let options = '<option value="">Sélectionnez un destinataire</option>';
