@@ -494,7 +494,7 @@
             loadUniversityName();
             
             // NOUVEAU: Vérifier les messages non lus
-            checkUnreadMessages();
+            checkUnreadMessages(); // CORRECTION: Cette fonction est maintenant définie
 
         });
 
@@ -1695,6 +1695,114 @@
             }
         }
 
+        // ==================================================================
+        // NOUVEAU: LOGIQUE DE MESSAGERIE POUR L'ADMIN
+        // ==================================================================
+        
+        function openMessagingUI() {
+            document.getElementById('messaging-ui').classList.remove('hidden');
+            loadMessages();
+        }
+
+        function closeMessagingUI() {
+            document.getElementById('messaging-ui').classList.add('hidden');
+        }
+
+        function switchMessageBox(box) {
+            document.getElementById('inbox-btn').classList.toggle('border-orange-500', box === 'inbox');
+            document.getElementById('inbox-btn').classList.toggle('text-orange-600', box === 'inbox');
+            document.getElementById('sent-btn').classList.toggle('border-orange-500', box === 'sent');
+            document.getElementById('sent-btn').classList.toggle('text-orange-600', box === 'sent');
+            loadMessages(box);
+        }
+
+        async function loadMessages(box = 'inbox') {
+            const container = document.getElementById('message-list-container');
+            container.innerHTML = '<p>Chargement...</p>';
+            try {
+                const result = await callAdminApi('getMessages');
+                const messages = result.data[box];
+                
+                if (messages.length === 0) {
+                    container.innerHTML = `<p class="text-center text-sm text-gray-500 p-4">Aucun message.</p>`;
+                    return;
+                }
+
+                container.innerHTML = messages.map(msg => `
+                    <div onclick="viewMessage('${msg.ID_MESSAGE}', '${box}')" class="p-3 border-b cursor-pointer hover:bg-gray-50 ${!msg.isRead && box === 'inbox' ? 'font-bold' : ''}">
+                        <p class="truncate">${msg.SUJET}</p>
+                        <p class="text-sm text-gray-600 truncate">${box === 'inbox' ? `De: ${msg.NOM_EXPEDITEUR}` : `À: ${msg.ID_DESTINATAIRE}`}</p>
+                        <p class="text-xs text-gray-400">${new Date(msg.TIMESTAMP).toLocaleString()}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = `<p class="text-red-500 p-4">${error.message}</p>`;
+            }
+        }
+
+        async function viewMessage(messageId, box) {
+            document.getElementById('new-message-form-view').classList.add('hidden');
+            document.getElementById('message-content-view').classList.remove('hidden');
+            
+            const result = await callAdminApi('getMessages');
+            const message = result.data[box].find(m => m.ID_MESSAGE === messageId);
+
+            if (message) {
+                document.getElementById('message-subject').textContent = message.SUJET;
+                document.getElementById('message-sender').textContent = `De: ${message.NOM_EXPEDITEUR} | Le: ${new Date(message.TIMESTAMP).toLocaleString()}`;
+                document.getElementById('message-body').innerHTML = message.CORPS_MESSAGE.replace(/\n/g, '<br>');
+
+                if (box === 'inbox' && !message.isRead) {
+                    await callAdminApi('markMessageAsRead', { messageId });
+                    checkUnreadMessages();
+                    loadMessages(); // Recharger la liste pour enlever le gras
+                }
+            }
+        }
+
+        async function showNewMessageForm() {
+            document.getElementById('message-content-view').classList.add('hidden');
+            document.getElementById('new-message-form-view').classList.remove('hidden');
+            
+            const recipientSelect = document.getElementById('recipient');
+            recipientSelect.innerHTML = '<option>Chargement...</option>';
+
+            const result = await callAdminApi('getRecipients');
+            const { filieres, classes, responsables, students } = result.data;
+
+            let options = '<option value="">Sélectionnez un destinataire</option>';
+            options += `<option value="UNIVERSITE_${sessionStorage.getItem(ADMIN_SESSION_KEY)}">Toute l'université</option>`;
+            options += '<optgroup label="Filières">';
+            filieres.forEach(f => options += `<option value="FILIERE_${f.ID_FILIERE}">${f.NOM_FILIERE}</option>`);
+            options += '</optgroup><optgroup label="Classes">';
+            classes.forEach(c => options += `<option value="CLASSE_${c.ID_CLASSE}">${c.NOM_CLASSE}</option>`);
+            options += '</optgroup><optgroup label="Responsables">';
+            responsables.forEach(r => options += `<option value="USER_${r.ID_RESPONSABLE}">${r.NOM_RESPONSABLE} (Responsable)</option>`);
+            options += '</optgroup><optgroup label="Étudiants">';
+            students.forEach(s => options += `<option value="USER_${s.ID_ETUDIANT}">${s.NOM_COMPLET} (${s.ID_ETUDIANT})</option>`);
+            options += '</optgroup>';
+            recipientSelect.innerHTML = options;
+
+            document.getElementById('new-message-form').onsubmit = handleSendMessage;
+        }
+
+        async function handleSendMessage(e) {
+            e.preventDefault();
+            const recipientValue = document.getElementById('recipient').value;
+            const [type, id] = recipientValue.split('_');
+
+            const payload = { senderName: 'Administration', senderRole: 'admin', recipientId: id, recipientType: type.toUpperCase(), subject: document.getElementById('subject').value, body: document.getElementById('body').value };
+            await callAdminApi('sendMessage', payload);
+            alert('Message envoyé !');
+            closeMessagingUI();
+        }
+
+        async function checkUnreadMessages() {
+            const result = await callAdminApi('getMessages');
+            const unreadCount = result.data.unreadCount;
+            document.getElementById('unread-dot').classList.toggle('hidden', unreadCount === 0);
+        }
+
         // NOUVEAU: Fonction d'appel API spécifique à l'admin
         async function callAdminApi(action, data = {}) {
             const universityId = sessionStorage.getItem(ADMIN_SESSION_KEY);
@@ -1704,7 +1812,7 @@
             
             const response = await fetch(WEB_APP_URL, {
                 method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action, data: { ...data, universityId } })
+                body: JSON.stringify({ action, data: { ...data, universityId, userId: universityId, userRole: 'admin' } }) // L'admin est aussi un utilisateur
             });
             const result = await response.json();
             if (!result.success) throw new Error(result.error || 'Erreur API inconnue.');
